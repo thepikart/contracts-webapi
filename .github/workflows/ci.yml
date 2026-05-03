@@ -35,7 +35,7 @@ jobs:
         additional-properties: apiPath=internal/contracts,packageName=contracts,interfaceOnly=true
 
     - name: Build
-      run: go build -v ./cmd/ambulance-api-service
+      run: go build -v ./cmd/contracts-api-service
 
     - name: Test
       run: go test -v ./...
