@@ -1,0 +1,253 @@
+openapi: 3.0.0
+servers:
+  - description: Cluster Endpoint
+    url: /api
+info:
+  description: Hospital Contract Management for Web-In-Cloud system
+  version: "1.0.0"
+  title: Hospital Contracts Api
+  contact:
+    email: xpikartova@stuba.sk
+  license:
+    name: CC BY 4.0
+    url: "https://creativecommons.org/licenses/by/4.0/"
+tags:
+  - name: hospitalContracts
+    description: Hospital Contracts Management API
+paths:
+  "/contracts":
+    get:
+      tags:
+        - hospitalContracts
+      summary: Provides the list of hospital contracts
+      operationId: getContracts
+      description: Returns the list of all hospital contracts
+      responses:
+        "200":
+          description: value of the contracts list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Contract"
+              examples:
+                response:
+                  $ref: "#/components/examples/ContractsExample"
+    post:
+      tags:
+        - hospitalContracts
+      summary: Saves new contract
+      operationId: createContract
+      description: Use this method to store a new contract
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Contract"
+            examples:
+              request-sample:
+                $ref: "#/components/examples/ContractExample"
+        description: Contract to store
+        required: true
+      responses:
+        "200":
+          description: Value of the stored contract
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Contract"
+              examples:
+                updated-response:
+                  $ref: "#/components/examples/ContractExample"
+        "400":
+          description: Missing mandatory properties of input object
+        "409":
+          description: Contract with the given contract number already exists
+  "/contracts/{contractId}":
+    get:
+      tags:
+        - hospitalContracts
+      summary: Provides details of a single contract
+      operationId: getContract
+      description: By using contractId you get details of a specific contract
+      parameters:
+        - in: path
+          name: contractId
+          description: pass the id of the particular contract
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: value of the contract
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Contract"
+              examples:
+                response:
+                  $ref: "#/components/examples/ContractExample"
+        "404":
+          description: Contract with such ID does not exist
+    put:
+      tags:
+        - hospitalContracts
+      summary: Updates specific contract
+      operationId: updateContract
+      description: Use this method to update content of the contract
+      parameters:
+        - in: path
+          name: contractId
+          description: pass the id of the particular contract
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Contract"
+            examples:
+              request:
+                $ref: "#/components/examples/ContractExample"
+        description: Contract fields to update
+        required: true
+      responses:
+        "200":
+          description: Value of the updated contract
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Contract"
+              examples:
+                response:
+                  $ref: "#/components/examples/ContractExample"
+        "403":
+          description: Value of the contractId and the data id is mismatching
+        "404":
+          description: Contract with such ID does not exist
+    delete:
+      tags:
+        - hospitalContracts
+      summary: Deletes specific contract
+      operationId: deleteContract
+      description: Use this method to delete the specific contract
+      parameters:
+        - in: path
+          name: contractId
+          description: pass the id of the particular contract
+          required: true
+          schema:
+            type: string
+      responses:
+        "204":
+          description: Item deleted
+        "404":
+          description: Contract with such ID does not exist
+components:
+  schemas:
+    Contract:
+      type: object
+      required:
+        - contractNumber
+        - name
+        - partner
+        - validFrom
+        - validUntil
+        - budget
+        - status
+      properties:
+        contractNumber:
+          type: string
+          description: Unique identifier of the contract
+          example: ZML-2024-001
+        name:
+          type: string
+          description: Name of the contract
+          example: IT Support
+        partner:
+          type: string
+          description: Name of the external partner
+          example: TechCorp s.r.o.
+        validFrom:
+          type: string
+          format: date
+          description: Date from which the contract is valid
+          example: "2024-01-01"
+        validUntil:
+          type: string
+          format: date
+          description: Date until which the contract is valid
+          example: "2024-12-31"
+        budget:
+          type: number
+          description: Total budget of the contract in EUR
+          example: 50000
+        status:
+          type: string
+          description: Current status of the contract
+          enum:
+            - Active
+            - Ended
+            - Archived
+          example: Active
+        serviceType:
+          type: string
+          description: Type of service provided under the contract
+          enum:
+            - IT Support
+            - Cleaning
+            - Material Supply
+            - Security Services
+            - Other
+          example: IT Support
+        description:
+          type: string
+          description: Optional description or notes about the contract
+          example: Annual IT support and maintenance contract
+  examples:
+    ContractExample:
+      summary: Sample contract
+      description: Example of a hospital contract entry
+      value:
+        contractNumber: ZML-2024-001
+        name: IT Support
+        partner: TechCorp s.r.o.
+        validFrom: "2024-01-01"
+        validUntil: "2024-12-31"
+        budget: 50000
+        status: Active
+        serviceType: IT Support
+        description: Annual IT support and maintenance contract
+    ContractsExample:
+      summary: Sample list of contracts
+      description: Example of a list of hospital contracts
+      value:
+        - contractNumber: ZML-2024-001
+          name: IT Support
+          partner: TechCorp s.r.o.
+          validFrom: "2024-01-01"
+          validUntil: "2024-12-31"
+          budget: 50000
+          status: Active
+          serviceType: IT Support
+          description: Annual IT support and maintenance contract
+        - contractNumber: ZML-2024-002
+          name: Cleaning Services
+          partner: CleanPro s.r.o.
+          validFrom: "2024-03-01"
+          validUntil: "2025-02-28"
+          budget: 18000
+          status: Active
+          serviceType: Cleaning
+          description: Monthly cleaning services for all hospital floors
+        - contractNumber: ZML-2023-047
+          name: Medical Supplies
+          partner: MedSupply a.s.
+          validFrom: "2023-06-01"
+          validUntil: "2024-05-31"
+          budget: 120000
+          status: Ended
+          serviceType: Material Supply
+          description: Supply of disposable medical materials
