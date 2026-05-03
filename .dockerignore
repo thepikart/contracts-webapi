@@ -1,0 +1,5 @@
+internal/contracts/api_*
+internal/contracts/model_*
+internal/contracts/routers.go
+build/
+deployments/
