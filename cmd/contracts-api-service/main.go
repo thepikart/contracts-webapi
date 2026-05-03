@@ -6,6 +6,7 @@ import (
     "strings"
     "github.com/gin-gonic/gin"
     "github.com/thepikart/contracts-webapi/api"
+    "github.com/thepikart/contracts-webapi/internal/contracts"
 )
 
 func main() {
@@ -21,6 +22,10 @@ func main() {
     engine := gin.New()
     engine.Use(gin.Recovery())
     // request routings
+    handleFunctions := &contracts.ApiHandleFunctions{
+        HospitalContractsAPI: contracts.NewHospitalContractsApi(),
+    }
+    contracts.NewRouterWithGinEngine(engine, *handleFunctions)
     engine.GET("/openapi", api.HandleOpenApi)
     engine.Run(":" + port)
 }

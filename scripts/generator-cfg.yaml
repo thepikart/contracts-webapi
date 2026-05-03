@@ -1,0 +1,8 @@
+generatorName: go-gin-server
+outputDir: /local
+inputSpec: /local/api/contracts.openapi.yaml
+enablePostProcessFile: true
+additionalProperties:
+  apiPath: internal/contracts
+  packageName: contracts
+  interfaceOnly: true

@@ -1,0 +1,4 @@
+internal/contracts/README.md
+internal/contracts/api_hospital_contracts.go
+internal/contracts/model_contract.go
+internal/contracts/routers.go
