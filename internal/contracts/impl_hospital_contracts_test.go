@@ -68,8 +68,8 @@ func (suite *HospitalContractsSuite) SetupTest() {
 				ContractNumber: "test-contract",
 				Name:           "Test Contract",
 				Partner:        "Test Partner s.r.o.",
-				ValidFrom:      "2024-01-01",
-				ValidUntil:     "2024-12-31",
+				ValidFrom:      "2026-01-01",
+				ValidUntil:     "2028-12-31",
 				Budget:         50000,
 				Status:         "Active",
 			},
@@ -87,8 +87,8 @@ func (suite *HospitalContractsSuite) Test_UpdateContract_DbServiceUpdateCalled()
 		"contractNumber": "test-contract",
 		"name": "Updated Contract",
 		"partner": "Test Partner s.r.o.",
-		"validFrom": "2024-01-01",
-		"validUntil": "2024-12-31",
+		"validFrom": "2026-01-01",
+		"validUntil": "2028-12-31",
 		"budget": 50000,
 		"status": "Active"
 	}`
