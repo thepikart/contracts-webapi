@@ -190,7 +190,6 @@ components:
           enum:
             - Active
             - Ended
-            - Archived
           example: Active
         serviceType:
           type: string

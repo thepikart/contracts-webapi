@@ -2,6 +2,7 @@ package contracts
 
 import (
 	"net/http"
+	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
@@ -96,6 +97,39 @@ func (o implHospitalContractsAPI) CreateContract(c *gin.Context) {
 		return
 	}
 
+	if contract.Name == "" || contract.Partner == "" {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"status":  "Bad Request",
+			"message": "Name and Partner are required",
+			"error":   "missing required fields",
+		})
+		return
+	}
+	if contract.ValidFrom == "" || contract.ValidUntil == "" {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"status":  "Bad Request",
+			"message": "ValidFrom and ValidUntil are required",
+			"error":   "missing required fields",
+		})
+		return
+	}
+	if contract.ValidFrom >= contract.ValidUntil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"status":  "Bad Request",
+			"message": "ValidFrom must be earlier than ValidUntil",
+			"error":   "invalid date range",
+		})
+		return
+	}
+	if err := validateStatusAgainstDates(contract.Status, contract.ValidFrom, contract.ValidUntil); err != "" {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"status":  "Bad Request",
+			"message": err,
+			"error":   "invalid status for date range",
+		})
+		return
+	}
+
 	if contract.ContractNumber == "" {
 		contract.ContractNumber = uuid.New().String()
 	}
@@ -183,8 +217,34 @@ func (o implHospitalContractsAPI) UpdateContract(c *gin.Context) {
 			contract.Description = updatedFields.Description
 		}
 
+		if contract.ValidFrom >= contract.ValidUntil {
+			return nil, gin.H{
+				"status":  http.StatusBadRequest,
+				"message": "ValidFrom must be earlier than ValidUntil",
+				"error":   "invalid date range",
+			}, http.StatusBadRequest
+		}
+		if errMsg := validateStatusAgainstDates(contract.Status, contract.ValidFrom, contract.ValidUntil); errMsg != "" {
+			return nil, gin.H{
+				"status":  http.StatusBadRequest,
+				"message": errMsg,
+				"error":   "invalid status for date range",
+			}, http.StatusBadRequest
+		}
+
 		return contract, contract, http.StatusOK
 	})
+}
+
+func validateStatusAgainstDates(status, validFrom, validUntil string) string {
+	today := time.Now().Format("2006-01-02")
+	if today > validUntil && status == "Active" {
+		return "Contract past its end date cannot be Active"
+	}
+	if today >= validFrom && today <= validUntil && status == "Ended" {
+		return "Contract within its validity period cannot be Ended"
+	}
+	return ""
 }
 
 func (o implHospitalContractsAPI) DeleteContract(c *gin.Context) {
